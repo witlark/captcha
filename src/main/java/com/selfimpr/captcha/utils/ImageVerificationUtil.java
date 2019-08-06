@@ -203,7 +203,7 @@ public class ImageVerificationUtil {
 
                     rgb_ori = r + (g << 8) + (b << 16) + (140 << 24);
 
-                    //  对遮罩图透明处理
+                    //  对遮罩透明处理
                     shadeImage.setRGB(x + i, y + j, rgb_ori);
                     //  设置遮罩颜色
 //                    shadeImage.setRGB(x + i, y + j, rgb_ori);
@@ -213,16 +213,6 @@ public class ImageVerificationUtil {
             }
         }
 
-        //  =============================================
-        //  输出图片
-//            HttpServletResponse response = getResponse();
-//            response.setContentType("image/jpeg");
-//            ServletOutputStream outputStream = response.getOutputStream();
-////            outputStream.write(oriCopyImages);
-////            BufferedImage bufferedImage = ImageIO.read(originImageFile);
-//            ImageIO.write(shadeImage, "png", outputStream);
-//            outputStream.flush();
-        //  =================================================
         return shadeImage;
     }
 

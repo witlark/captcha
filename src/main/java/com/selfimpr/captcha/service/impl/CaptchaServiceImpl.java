@@ -70,33 +70,27 @@ public class CaptchaServiceImpl implements CaptchaService {
 
         Map<String, String> pictureMap = null;
         try {
-            //  原图路径
-            String verifyImagePath = URLDecoder.decode(this.getClass().getResource("/").getPath() + "static/targets", "UTF-8");
-            //  模板图路径
-            String templateImagePath = URLDecoder.decode(this.getClass().getResource("/").getPath() + "static/templates", "UTF-8");
-            //  描边图片路径
-            String borderImagePath = URLDecoder.decode(this.getClass().getResource("/").getPath() + "static/templates", "UTF-8");
-            String path = URLDecoder.decode(ResourceUtils.getURL("classpath:").getPath(), "UTF-8");
-            System.out.println(path + "=======================================================");
-            File verifyImageImport = new File(verifyImagePath);
-            File templateImageImport = new File(templateImagePath);
-            //  获取原图所有图片
+//            //  原图路径，这种方式不推荐。当运行jar文件的时候，路径是找不到的，我的路径是写到配置文件中的。
+//            String verifyImagePath = URLDecoder.decode(this.getClass().getResource("/").getPath() + "static/targets", "UTF-8");
+
+//            获取模板文件，。推荐文件通过流读取， 因为文件在开发中的路径和打成jar中的路径是不一致的
+//            InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream("static/template/1.png");
+            File verifyImageImport = new File(verificationImagePathPrefix);
             File[] verifyImages = verifyImageImport.listFiles();
-            //  获取模板图所有图片
-            File[] templateImages = templateImageImport.listFiles();
 
             Random random = new Random(System.currentTimeMillis());
             //  随机取得原图文件夹中一张图片
             File originImageFile = verifyImages[random.nextInt(verifyImages.length)];
-            //  随机取得模板图文件夹中一张图片
-            File templateImageFile = templateImages[random.nextInt(templateImages.length)];
 
-            //  读取描边图片
-            File borderImageFile = new File(borderImagePath + "/border.png");
-            //  读取描边图片类型
+            //  获取模板图片文件
+            File templateImageFile = new File(templateImagePathPrefix + "/template.png");
+
+            //  获取描边图片文件
+            File borderImageFile = new File(templateImagePathPrefix + "/border.png");
+            //  获取描边图片类型
             String borderImageFileType = borderImageFile.getName().substring(borderImageFile.getName().lastIndexOf(".") + 1);
 
-            //  获得原图文件类型
+            //  获取原图文件类型
             String originImageFileType = originImageFile.getName().substring(originImageFile.getName().lastIndexOf(".") + 1);
             //  获取模板图文件类型
             String templateImageFileType = templateImageFile.getName().substring(templateImageFile.getName().lastIndexOf(".") + 1);
@@ -113,6 +107,7 @@ public class CaptchaServiceImpl implements CaptchaService {
             //  获取原图感兴趣区域坐标
             Map<String, Integer> XYMap= ImageVerificationUtil.generateCutoutCoordinates(verificationImage, readTemplateImage);
             getRequest().getSession().setAttribute("ImageXYMap", XYMap);
+            //  在分布式应用中，可将session改为redis存储
 
             int X = XYMap.get("X");
             int Y = XYMap.get("Y");
@@ -131,7 +126,7 @@ public class CaptchaServiceImpl implements CaptchaService {
 //            HttpServletResponse response = getResponse();
 //            response.setContentType("image/jpeg");
 //            ServletOutputStream outputStream = response.getOutputStream();
-////            outputStream.write(oriCopyImages);
+//            outputStream.write(oriCopyImages);
 //            BufferedImage bufferedImage = ImageIO.read(originImageFile);
 //            ImageIO.write(bufferedImage, originImageType, outputStream);
 //            outputStream.flush();
