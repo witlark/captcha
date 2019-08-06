@@ -1,0 +1,21 @@
+
+server:
+  port: 8080
+spring:
+  freemarker:
+    allow-request-override: false
+    cache: true
+    check-template-location: true
+    charset: UTF-8
+    content-type: text/html
+    expose-request-attributes: false
+    expose-session-attributes: false
+    expose-spring-macro-helpers: false
+
+
+captcha:
+  slide-verification-code:
+    path:
+      origin-image: "D:/DevelopmentTools/IntelliJ IDEA 2017.3.5/ProjectFiles/captcha/target/classes/static/targets"
+      template-image: "D:/DevelopmentTools/IntelliJ IDEA 2017.3.5/ProjectFiles/captcha/target/classes/static/templates"
+
