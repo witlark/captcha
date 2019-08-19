@@ -5,6 +5,7 @@ import com.google.code.kaptcha.util.Config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.awt.*;
 import java.util.Properties;
 
 @Configuration
@@ -18,9 +19,9 @@ public class CaptchaConfig
         // 是否有边框 默认为true 我们可以自己设置yes，no
         properties.setProperty("kaptcha.border", "yes");
         // 边框颜色 默认为Color.BLACK
-        properties.setProperty("kaptcha.border.color", "105,179,90");
+        properties.setProperty("kaptcha.border.color",  "black");
         // 验证码文本字符颜色 默认为Color.BLACK
-        properties.setProperty("kaptcha.textproducer.font.color", "0,200,83");
+        properties.setProperty("kaptcha.textproducer.font.color", "black");
         // 验证码图片宽度 默认为200
         properties.setProperty("kaptcha.image.width", "150");
         // 验证码图片高度 默认为50
@@ -36,7 +37,7 @@ public class CaptchaConfig
         // 验证码文本字体样式 默认为new Font("Arial", 1, fontSize), new Font("Courier", 1, fontSize)
         properties.setProperty("kaptcha.textproducer.font.names", "微软雅黑");
         // 验证码噪点颜色 默认为Color.BLACK
-        properties.setProperty("kaptcha.noise.color", "0,200,83");
+        properties.setProperty("kaptcha.noise.color",  "black");
         Config config = new Config(properties);
         defaultKaptcha.setConfig(config);
         return defaultKaptcha;

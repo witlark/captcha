@@ -12,9 +12,9 @@
         .imgBtn{ width:44px; height: 171px; position: absolute; left: 0;  }
         .imgBtn img{ z-index:99; align:center;}
         .imgBg{ position:absolute;bottom:35px;width: 280px; height: 171px; box-shadow: 0px 4px 8px #3C5476; display:none;z-index:9;}
-        .imgBg_2{ position:absolute; bottom:35px; width: 170px; height: 60px;  box-shadow: 0px 4px 8px #3C5476; display:block;z-index:9;}
-        .imgBg_3{ position:absolute;  bottom:35px; width: 170px; height: 60px;  box-shadow: 0px 4px 8px #3C5476; display:block;z-index:9;}
-        .hkinnerWrap{ border: 1px solid #eee; }
+        .imgBg_2{ position:absolute; bottom: -80px;  bottom:35px; width: 150px; height: 60px;   display:block;z-index:9;}
+        .imgBg_3{ position:absolute;  bottom: -80px; bottom:35px; width: 170px; height: 60px;   display:block;z-index:9;}
+        .hkinnerWrap{ border: 1px solid #eee; z-index:9999}
         .green{ border-color:#34C6C2 !important; }
         .green .v_rightBtn{ background: #34C6C2; color: #fff; }
         .red{ border-color:red !important; }
@@ -29,18 +29,13 @@
 <body>
 
 
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
+<div style = "width: 100%; height:250px;"></div>
+
 <div class="comImageValidate rightValidate">
 
+    <div class="imgBg_2"></div>
+    <div class="imgBg_3"></div>
+    <div style = "width: 100%; height: 30px;"></div>
     <div class="imgBg">
         <div class="imgBtn">
             <img alt="" src="">
@@ -49,11 +44,7 @@
 	        	<img alt="" src="">
 	        </span>
     </div>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
+
     <div class="hkinnerWrap" style="height:30px; position: relative">
         <span  class="v_rightBtn "><em class="notSel">→</em></span>
         <span class="huakuai"  style="font-size: 12px;line-height: 33px;color: #A9A9A9;">向右滑动滑块填充拼图完成验证</span>
@@ -61,8 +52,7 @@
     </div>
 
 </div>
-<div class="imgBg_2"/>
-<div class="imgBg_3"/>
+
 
 
 

@@ -43,16 +43,29 @@ public class ImageVerificationVo implements Serializable {
     private String cutoutImage;
 
     /**
+     * 滑动验证码，X轴
+     */
+    private int X;
+
+    /**
      * 滑动验证码，Y轴
      */
-    private String Y;
+    private int Y;
 
-    public String getY() {
+    public int getX() {
+        return X;
+    }
+
+    public void setX(int x) {
+        X = x;
+    }
+
+    public int getY() {
         return Y;
     }
 
-    public void setY(String y) {
-        this.Y = y;
+    public void setY(int y) {
+        Y = y;
     }
 
     public String getType() {

@@ -89,7 +89,7 @@ public class CaptchaServiceImpl implements CaptchaService {
 
         try {
             if (imageVerificationDto == null || imageVerificationDto.getType() == null) {
-                type = VerificationCodeType.OPERATION.name();
+                type = VerificationCodeType.CHAR.name();
             } else {
                 type = imageVerificationDto.getType();
             }
@@ -181,7 +181,6 @@ public class CaptchaServiceImpl implements CaptchaService {
         try {
 
             imageVerificationVo = new ImageVerificationVo();
-            imageVerificationVo.setType(imageVerificationDto.getType());
             //  生成字符验证码文本
             text = captchaProducer.createText();
             //  生成字符验证码图片
@@ -193,7 +192,8 @@ public class CaptchaServiceImpl implements CaptchaService {
             bytes = byteArrayOutputStream.toByteArray();
             //  图片base64加密
             imageVerificationVo.setCharImage(Base64Utils.encodeToString(bytes));
-            imageVerificationVo.setType(imageVerificationDto.getType());
+            imageVerificationVo.setType(imageVerificationDto.getType() == null ? "char" : imageVerificationDto.getType());
+
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new ServiceException(ServiceExceptionCode.SELECT_VERIFICATION_CODE_ERROR);
@@ -242,18 +242,18 @@ public class CaptchaServiceImpl implements CaptchaService {
 
 
             //  获取原图感兴趣区域坐标
-            Map<String, Integer> XYMap= ImageVerificationUtil.generateCutoutCoordinates(verificationImage, readTemplateImage);
-            getRequest().getSession().setAttribute("imageVerificationVo", imageVerificationVo);
-            //  在分布式应用中，可将session改为redis存储
+            imageVerificationVo = ImageVerificationUtil.generateCutoutCoordinates(verificationImage, readTemplateImage);
 
-            int X = XYMap.get("X");
-            int Y = XYMap.get("Y");
+            int Y  = imageVerificationVo.getY();
+                    //  在分布式应用中，可将session改为redis存储
+            getRequest().getSession().setAttribute("imageVerificationVo", imageVerificationVo);
+
             //  根据原图生成遮罩图和切块图
-            imageVerificationVo = ImageVerificationUtil.pictureTemplateCutout(originImageFile, originImageFileType, templateImageFile, templateImageFileType, X, Y);
+            imageVerificationVo = ImageVerificationUtil.pictureTemplateCutout(originImageFile, originImageFileType, templateImageFile, templateImageFileType, imageVerificationVo.getX(), imageVerificationVo.getY());
 
             //   剪切图描边
             imageVerificationVo = ImageVerificationUtil.cutoutImageEdge(imageVerificationVo, borderImage, borderImageFileType);
-            imageVerificationVo.setY(String.valueOf(Y));
+            imageVerificationVo.setY(Y);
             imageVerificationVo.setType(imageVerificationDto.getType());
 
 
@@ -284,9 +284,9 @@ public class CaptchaServiceImpl implements CaptchaService {
     public boolean checkVerificationResult(String X, String Y) throws ServiceException {
         try {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-            Map<String, Integer> XYMap = (Map<String, Integer>) request.getSession().getAttribute("ImageXYMap");
-            if (XYMap != null) {
-                if ((Math.abs(Integer.parseInt(X) - XYMap.get("X")) <= 5) && Y.equals(XYMap.get("Y").toString())) {
+            ImageVerificationVo imageVerificationVo = (ImageVerificationVo) request.getSession().getAttribute("imageVerificationVo");
+            if (imageVerificationVo != null) {
+                if ((Math.abs(Integer.parseInt(X) - imageVerificationVo.getX()) <= 5) && Y.equals(String.valueOf(imageVerificationVo.getY()))) {
                     System.out.println("验证成功");
                     return true;
                 } else {

@@ -56,10 +56,10 @@ public class ImageVerificationUtil {
      * @param templateImage 模板图
      * @return 裁剪坐标
      */
-    public static Map<String, Integer> generateCutoutCoordinates(BufferedImage verificationImage, BufferedImage templateImage) {
+    public static ImageVerificationVo generateCutoutCoordinates(BufferedImage verificationImage, BufferedImage templateImage) {
 
         int X, Y;
-        Map<String, Integer> XYMap;
+        ImageVerificationVo imageVerificationVo = null;
 
         int VERIFICATION_IMAGE_WIDTH = verificationImage.getWidth();
         int VERIFICATION_IMAGE_HEIGHT = verificationImage.getHeight();
@@ -73,10 +73,11 @@ public class ImageVerificationUtil {
         if (TEMPLATE_IMAGE_HEIGHT - DEFAULT_IMAGE_HEIGHT >= 0) {
             Y = random.nextInt(10);
         }
-        XYMap = new HashMap<String, Integer>();
-        XYMap.put("X", X);
-        XYMap.put("Y", Y);
-        return XYMap;
+        imageVerificationVo = new ImageVerificationVo();
+        imageVerificationVo.setX(X);
+        imageVerificationVo.setY(Y);
+
+        return imageVerificationVo;
     }
 
     /**
