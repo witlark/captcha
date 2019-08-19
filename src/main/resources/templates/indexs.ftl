@@ -7,11 +7,13 @@
     <script type="text/javascript" src="../js/layer.js"></script>
 
     <style>
-        .rightValidate { width: 280px; margin: 0px auto; position: relative; line-height: 33px; height: 33px; text-align: center; z-index: 99; }
+        .rightValidate { width: 280px; margin: 0px auto; position: relative; line-height: 30px; height: 30px; text-align: center; z-index: 99; margin-top:60px;}
         .v_rightBtn { position: absolute; left: 0; top: 0; height: 33px; width: 40px; background: #ddd; cursor: pointer; }
         .imgBtn{ width:44px; height: 171px; position: absolute; left: 0;  }
         .imgBtn img{ z-index:99; align:center;}
         .imgBg{ position:absolute;bottom:35px;width: 280px; height: 171px; box-shadow: 0px 4px 8px #3C5476; display:none;z-index:9;}
+        .imgBg_2{ position:absolute; bottom:35px; width: 170px; height: 60px;  box-shadow: 0px 4px 8px #3C5476; display:block;z-index:9;}
+        .imgBg_3{ position:absolute;  bottom:35px; width: 170px; height: 60px;  box-shadow: 0px 4px 8px #3C5476; display:block;z-index:9;}
         .hkinnerWrap{ border: 1px solid #eee; }
         .green{ border-color:#34C6C2 !important; }
         .green .v_rightBtn{ background: #34C6C2; color: #fff; }
@@ -38,6 +40,7 @@
 <br/>
 <br/>
 <div class="comImageValidate rightValidate">
+
     <div class="imgBg">
         <div class="imgBtn">
             <img alt="" src="">
@@ -51,13 +54,15 @@
     <br/>
     <br/>
     <br/>
-    <div class="hkinnerWrap" style="height: 33px;position: relative">
+    <div class="hkinnerWrap" style="height:30px; position: relative">
         <span  class="v_rightBtn "><em class="notSel">→</em></span>
         <span class="huakuai"  style="font-size: 12px;line-height: 33px;color: #A9A9A9;">向右滑动滑块填充拼图完成验证</span>
         <input type = "hidden" name="validX"/>
     </div>
 
 </div>
+<div class="imgBg_2"/>
+<div class="imgBg_3"/>
 
 
 
@@ -86,7 +91,6 @@
             $(".imgBg").css("display","none");
             $(".refresh").css("display","none");
         });
-
 
         $('.v_rightBtn').on({
             mousedown: function(e) {
@@ -133,10 +137,6 @@
     });
     /*图形验证*/
     function submitDate(x,y,tokenId) {
-        // console.log(x);
-        // console.log(y);
-        // console.log(tokenId);
-
 
         $.ajax({
             url:"/captcha/check/verification/result?X="+x+"&Y="+y,
@@ -162,28 +162,66 @@
         })
     }
 
-    /*初始化图形验证码*/
+    var forumId=GetQueryString("type" );
+    //url参数
+    function GetQueryString(name)
+    {
+        var reg = new RegExp("(^|&)" + name +"=([^&]*)(&|$)" );
+        var r = window.location.search.substr(1).match(reg);
+
+        if(r!=null )
+            return  unescape(r[2]);
+        return null;
+
+    }
+
+
+    /*获取验证码*/
     function validateImageInit() {
+        var url = "/captcha/get/verification/image";
+        var parm = GetQueryString("type");
+        if (parm != null) {
+            url += "?type=" + parm;
+        }
+        console.log(url);
         $.ajax({
-            url:"/captcha/get/verification/image",
+            url: url,
             dataType:'json',
             cache:false,
             type: "get",
             success:function (data) {
-                y = data.Y;
-                $(".huakuai").html("向右滑动滑块填充拼图");
-                $(".imgBg").css("background",'#fff url("data:image/jpg;base64,'+data.shadeImage+'")');
-                $(".imgBtn").css('top', y+ "px");
-                $(".imgBtn").find("img").attr("src","data:image/png;base64,"+data.cutoutImage)
-                $(".hkinnerWrap").removeClass("red green");
-                $(".v_rightBtn").css("left",0);
-                $(".imgBtn").css("left",0);
-
-                console.log("Y: " + y );
+                var type = data.type;
+                console.log(type);
+                switch (type) {
+                    case "operation" : initOperationVerificationCode(data); break;
+                    case "char" : initCharVerificationCode(data); break;
+                    case "slide" : initSlideVerificationCode(data); break;
+                    default : console.log("验证码错误"); break;
+                }
             },error:function(err){
                 validateImageInit();
             }
         })
+    }
+
+    function initOperationVerificationCode(data) {
+        $(".imgBg_3").css("background",'#fff url("data:image/jpg;base64,'+data.operationImage+'")');
+    }
+
+    function initSlideVerificationCode(data) {
+        y = data.y;
+        $(".huakuai").html("向右滑动滑块填充拼图");
+        $(".imgBg").css("background",'#fff url("data:image/jpg;base64,'+data.shadeImage+'")');
+        $(".imgBtn").css('top', y+ "px");
+        $(".imgBtn").find("img").attr("src","data:image/png;base64,"+data.cutoutImage)
+        $(".hkinnerWrap").removeClass("red green");
+        $(".v_rightBtn").css("left",0);
+        $(".imgBtn").css("left",0);
+    }
+
+    function initCharVerificationCode(data) {
+        $(".imgBg_2").css("background",'#fff url("data:image/jpg;base64,'+data.charImage+'")');
+        $(".imgBg_3").css("none");
     }
 
 </script>

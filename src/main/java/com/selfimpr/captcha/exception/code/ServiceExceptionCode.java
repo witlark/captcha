@@ -19,7 +19,11 @@ public enum ServiceExceptionCode {
 
     URL_ENCODER_ERROR("SERVICE_005", "URL转码错误"),
 
-    IO_EXCEPTON("SERVICE_006", "IO异常");
+    IO_EXCEPTON("SERVICE_006", "IO异常"),
+
+    SELECT_VERIFICATION_CODE_ERROR("SERVICE_007","获取验证码异常"),
+
+    CHECK_VERIFICATION_CODE_ERROR("SERVICE_008","校验验证码异常");
 
     ServiceExceptionCode(String code, String name) {
         this.code = code;

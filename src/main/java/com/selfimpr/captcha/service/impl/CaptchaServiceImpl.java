@@ -1,16 +1,21 @@
 package com.selfimpr.captcha.service.impl;
 
 
+import com.google.code.kaptcha.Producer;
 import com.selfimpr.captcha.controller.CaptchaController;
+import com.selfimpr.captcha.enums.VerificationCodeType;
 import com.selfimpr.captcha.exception.ServiceException;
 import com.selfimpr.captcha.exception.code.ServiceExceptionCode;
+import com.selfimpr.captcha.model.dto.ImageVerificationDto;
+import com.selfimpr.captcha.model.vo.ImageVerificationVo;
 import com.selfimpr.captcha.service.CaptchaService;
 import com.selfimpr.captcha.utils.ImageVerificationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -18,11 +23,10 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Map;
 import java.util.Random;
 
@@ -40,35 +44,168 @@ public class CaptchaServiceImpl implements CaptchaService {
      */
     private static final Logger log = LoggerFactory.getLogger(CaptchaController.class);
 
-    /**
-     * 源图路径前缀
-     */
+    /*  字符验证码  */
+    @Autowired
+    private Producer captchaProducer;
+
+    /*  数值运算验证码  */
+    @Autowired
+    private Producer captchaProducerMath;
+
+    /*  源图路径前缀  */
     @Value("${captcha.slide-verification-code.path.origin-image}")
     private String verificationImagePathPrefix;
 
-    /**
-     * 模板图路径前缀
-     * @return
-     */
+    /*  模板图路径前缀  */
     @Value("${captcha.slide-verification-code.path.template-image}")
     private String templateImagePathPrefix;
 
+
+
+
+    /*  获取request对象  */
     protected static HttpServletRequest getRequest() {
         return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
     }
 
+    /*  获取response对象  */
     protected static HttpServletResponse getResponse() {
         return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
     }
 
 
-
-
+    /**
+     * 根据类型获取验证码
+     *
+     * @param imageVerificationDto 用户信息
+     * @return 图片验证码
+     * @throws ServiceException 查询图片验证码异常
+     */
     @Override
-    public Map<String, String> getVerificationImage() throws ServiceException {
+    public ImageVerificationVo selectImageVerificationCode(ImageVerificationDto imageVerificationDto) throws ServiceException {
+
+        ImageVerificationVo imageVerificationVo = null;
+        String type = null;
+
+        try {
+            if (imageVerificationDto == null || imageVerificationDto.getType() == null) {
+                type = VerificationCodeType.OPERATION.name();
+            } else {
+                type = imageVerificationDto.getType();
+            }
+            VerificationCodeType verificationCodeType = Enum.valueOf(VerificationCodeType.class, type.toUpperCase());
+
+            switch (verificationCodeType) {
+                //  获取运算验证码
+                case OPERATION:
+                    imageVerificationVo = selectOperationVerificationCode(imageVerificationDto);
+                    break;
+                //  获取字符验证码
+                case CHAR:
+                    imageVerificationVo = selectCharVerificationCode(imageVerificationDto);
+                    break;
+                //  获取滑动验证码
+                case SLIDE:
+                    imageVerificationVo = selectSlideVerificationCode(imageVerificationDto);
+                    break;
+
+                default:
+                    throw new ServiceException(ServiceExceptionCode.SELECT_VERIFICATION_CODE_ERROR);
+            }
+
+        } catch (ServiceException e) {
+            log.error(e.getMessage(), e);
+            throw new ServiceException(ServiceExceptionCode.SELECT_VERIFICATION_CODE_ERROR);
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage(), e);
+            throw new ServiceException(ServiceExceptionCode.SELECT_VERIFICATION_CODE_ERROR);
+        }
+        return imageVerificationVo;
+    }
 
 
-        Map<String, String> pictureMap = null;
+    /**
+     * 获取运算验证码
+     *
+     * @param imageVerificationDto 用户信息
+     * @return 运算验证吗
+     * @throws ServiceException 查询运算验证码异常
+     */
+    private ImageVerificationVo selectOperationVerificationCode(ImageVerificationDto imageVerificationDto) throws ServiceException {
+
+        byte[] bytes = null;
+        String text = "";
+        BufferedImage bufferedImage = null;
+        ImageVerificationVo imageVerificationVo = null;
+
+        try {
+
+            imageVerificationVo = new ImageVerificationVo();
+            imageVerificationVo.setType(imageVerificationDto.getType());
+            //  生成运算验证码文本
+            text = captchaProducerMath.createText();
+            String value = text.substring(0, text.lastIndexOf("@"));
+            //  生成运算验证码图片
+            bufferedImage = captchaProducerMath.createImage(value);
+            //  验证码存入redis
+            getRequest().getSession().setAttribute("imageVerificationVo", imageVerificationVo);
+            //  在分布式应用中，可将session改为redis存储
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
+            bytes = byteArrayOutputStream.toByteArray();
+            //  图片base64加密
+            imageVerificationVo.setOperationImage(Base64Utils.encodeToString(bytes));
+            imageVerificationVo.setType(imageVerificationDto.getType());
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            throw new ServiceException(ServiceExceptionCode.SELECT_VERIFICATION_CODE_ERROR);
+        }
+        return imageVerificationVo;
+
+    }
+
+    /**
+     * 获取字符验证码
+     *
+     * @param imageVerificationDto 用户信息
+     * @return 字符验证码
+     * @throws ServiceException 获取字符验证码异常
+     */
+    private ImageVerificationVo selectCharVerificationCode(ImageVerificationDto imageVerificationDto) throws ServiceException {
+
+        byte[] bytes = null;
+        String text = "";
+        BufferedImage bufferedImage = null;
+        ImageVerificationVo imageVerificationVo = null;
+
+        try {
+
+            imageVerificationVo = new ImageVerificationVo();
+            imageVerificationVo.setType(imageVerificationDto.getType());
+            //  生成字符验证码文本
+            text = captchaProducer.createText();
+            //  生成字符验证码图片
+            bufferedImage = captchaProducer.createImage(text);
+            getRequest().getSession().setAttribute("imageVerificationVo", imageVerificationVo);
+            //  在分布式应用中，可将session改为redis存储
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
+            bytes = byteArrayOutputStream.toByteArray();
+            //  图片base64加密
+            imageVerificationVo.setCharImage(Base64Utils.encodeToString(bytes));
+            imageVerificationVo.setType(imageVerificationDto.getType());
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            throw new ServiceException(ServiceExceptionCode.SELECT_VERIFICATION_CODE_ERROR);
+        }
+        return imageVerificationVo;
+
+    }
+
+    public ImageVerificationVo selectSlideVerificationCode(ImageVerificationDto imageVerificationDto) throws ServiceException {
+
+
+        ImageVerificationVo imageVerificationVo = null;
         try {
 //            //  原图路径，这种方式不推荐。当运行jar文件的时候，路径是找不到的，我的路径是写到配置文件中的。
 //            String verifyImagePath = URLDecoder.decode(this.getClass().getResource("/").getPath() + "static/targets", "UTF-8");
@@ -106,18 +243,18 @@ public class CaptchaServiceImpl implements CaptchaService {
 
             //  获取原图感兴趣区域坐标
             Map<String, Integer> XYMap= ImageVerificationUtil.generateCutoutCoordinates(verificationImage, readTemplateImage);
-            getRequest().getSession().setAttribute("ImageXYMap", XYMap);
+            getRequest().getSession().setAttribute("imageVerificationVo", imageVerificationVo);
             //  在分布式应用中，可将session改为redis存储
 
             int X = XYMap.get("X");
             int Y = XYMap.get("Y");
             //  根据原图生成遮罩图和切块图
-            pictureMap = ImageVerificationUtil.pictureTemplateCutout(originImageFile, originImageFileType, templateImageFile, templateImageFileType, X, Y);
+            imageVerificationVo = ImageVerificationUtil.pictureTemplateCutout(originImageFile, originImageFileType, templateImageFile, templateImageFileType, X, Y);
 
             //   剪切图描边
-            pictureMap = ImageVerificationUtil.cutoutImageEdge(pictureMap, borderImage, borderImageFileType);
-
-            pictureMap.put("Y", String.valueOf(Y));
+            imageVerificationVo = ImageVerificationUtil.cutoutImageEdge(imageVerificationVo, borderImage, borderImageFileType);
+            imageVerificationVo.setY(String.valueOf(Y));
+            imageVerificationVo.setType(imageVerificationDto.getType());
 
 
 
@@ -140,7 +277,7 @@ public class CaptchaServiceImpl implements CaptchaService {
             throw new ServiceException(ServiceExceptionCode.IO_EXCEPTON);
         }
 
-        return pictureMap;
+        return imageVerificationVo;
     }
 
     @Override

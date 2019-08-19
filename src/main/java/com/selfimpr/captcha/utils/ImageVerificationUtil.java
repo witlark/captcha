@@ -3,6 +3,7 @@ package com.selfimpr.captcha.utils;
 
 import com.selfimpr.captcha.exception.ServiceException;
 import com.selfimpr.captcha.exception.code.ServiceExceptionCode;
+import com.selfimpr.captcha.model.vo.ImageVerificationVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Base64Utils;
@@ -18,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -90,8 +90,8 @@ public class ImageVerificationUtil {
      * @return
      * @throws ServiceException
      */
-    public static Map<String, String> pictureTemplateCutout(File originImageFile, String originImageFileType, File templateImageFile, String templateImageFileType, int X, int Y) throws ServiceException {
-        Map<String,String> pictureMap = new HashMap<String, String>();
+    public static ImageVerificationVo pictureTemplateCutout(File originImageFile, String originImageFileType, File templateImageFile, String templateImageFileType, int X, int Y) throws ServiceException {
+        ImageVerificationVo imageVerificationVo = null;
 
 
         try {
@@ -126,33 +126,34 @@ public class ImageVerificationUtil {
             //  原图生成遮罩
             BufferedImage shadeImage = generateShadeByTemplateImage(originImage, templateImage, X, Y);
 
+            imageVerificationVo = new ImageVerificationVo();
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(originImage, originImageFileType, byteArrayOutputStream);
             byte[] originImageBytes = byteArrayOutputStream.toByteArray();
             byteArrayOutputStream.flush();
             byteArrayOutputStream.reset();
             String originImageString = Base64Utils.encodeToString(originImageBytes);
-            pictureMap.put("originImage", originImageString);
+            imageVerificationVo.setOriginImage(originImageString);
 
             ImageIO.write(shadeImage, templateImageFileType, byteArrayOutputStream);
             byte[] shadeImageBytes = byteArrayOutputStream.toByteArray();
             byteArrayOutputStream.flush();
             byteArrayOutputStream.reset();
             String shadeImageString = Base64Utils.encodeToString(shadeImageBytes);
-            pictureMap.put("shadeImage", shadeImageString);
+            imageVerificationVo.setShadeImage(shadeImageString);
 
             ImageIO.write(cutoutImage, templateImageFileType, byteArrayOutputStream);
             byte[] cutoutImageBytes = byteArrayOutputStream.toByteArray();
             byteArrayOutputStream.reset();
             String cutoutImageString = Base64Utils.encodeToString(cutoutImageBytes);
-            pictureMap.put("cutoutImage", cutoutImageString);
+            imageVerificationVo.setCutoutImage(cutoutImageString);
 
 
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new ServiceException(ServiceExceptionCode.IO_EXCEPTON);
         }
-        return pictureMap;
+        return imageVerificationVo;
     }
 
     /**
@@ -293,15 +294,15 @@ public class ImageVerificationUtil {
 
     /**
      * 切块图描边
-     * @param pictureMap 图片容器
+     * @param imageVerificationVo 图片容器
      * @param borderImage 描边图
      * @param borderImageFileType 描边图类型
      * @return 图片容器
      * @throws ServiceException 图片描边异常
      */
-    public static Map<String,String> cutoutImageEdge(Map<String, String> pictureMap, BufferedImage borderImage, String borderImageFileType) throws ServiceException{
+    public static ImageVerificationVo cutoutImageEdge(ImageVerificationVo imageVerificationVo, BufferedImage borderImage, String borderImageFileType) throws ServiceException{
         try {
-            String cutoutImageString = pictureMap.get("cutoutImage");
+            String cutoutImageString = imageVerificationVo.getCutoutImage();
             byte[] bytes = Base64Utils.decodeFromString(cutoutImageString);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
             BufferedImage cutoutImage = ImageIO.read(byteArrayInputStream);
@@ -318,11 +319,11 @@ public class ImageVerificationUtil {
             ImageIO.write(cutoutImage, borderImageFileType, byteArrayOutputStream);
             byte[] cutoutImageBytes = byteArrayOutputStream.toByteArray();
             String cutoutImageStr = Base64Utils.encodeToString(cutoutImageBytes);
-            pictureMap.put("cutoutImage", cutoutImageStr);
+            imageVerificationVo.setCutoutImage(cutoutImageStr);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new ServiceException(ServiceExceptionCode.IO_EXCEPTON);
         }
-        return pictureMap;
+        return imageVerificationVo;
     }
 }
