@@ -32,12 +32,12 @@
 config.selfimpr.captcha  ->  config  ->  CaptchaConfig  ->  getKaptchaBeanMath()
 - 滑动验证码: <br/>
 需要将自己的验证码图片配置到application.yml文件路径中。相关的验证码图片和模板在以下位置：
-项目中resources  ->  static ->  targets和templates目录
+项目中resources  ->  static ->  targets和templates目录<br/>
 
-##许可证
-[![license](https://img.shields.io/badge/License-MIT-orange?style=flat-square)](https://img.shields.io/badge/License-MIT-orange)
+####许可证
+[![license](https://img.shields.io/badge/License-MIT-orange?style=flat-square)](https://img.shields.io/badge/License-MIT-orange) <br/>
 
-##预览图
+####预览图
 <a href="https://gitee.com/gester/captcha/blob/develop/src/main/resources/static/img/1.jpg">预览图1</a>
 <a href="https://gitee.com/gester/captcha/blob/develop/src/main/resources/static/img/2.jpg">预览图2</a>
 <a href="https://gitee.com/gester/captcha/blob/develop/src/main/resources/static/img/3.jpg">预览图3</a>
