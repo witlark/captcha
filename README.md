@@ -1,37 +1,48 @@
-# kaptcha
+<h1><a href="https://gitee.com/gester/captcha.git">Captcha</a></h1>
+<p align="center">
+<a href="#"></a><img alt="JDK" src="https://img.shields.io/badge/JDK-1.8-yellow.svg?style=flat-square"/></a>
+<a href="https://gitee.com/gester/captcha.git"><img alt="release version" src="https://img.shields.io/badge/release-v1.0.0-blue.svg"></a>
+</p>
 
-#### 介绍
-一个好用开源验证码功能，项目包括字符验证码、运算验证码及滑动验证码功能的集成
+#### 简介
+项目集成字符验证码、运算验证码、滑动验证码 <br>
+代码简洁、注释完备、易于上手，适合所有开发者集成
 
-#### 软件架构
-软件架构说明
+#### 功能
 
+- 字符验证码
+- 运算验证码
+- 滑动验证码
 
-#### 安装教程
+#### 快速访问
 
-1. xxxx
-2. xxxx
-3. xxxx
+1. 快速访问:  <a href="http://localhost:8080/captcha/index">http://localhost:8080/captcha/index</a> <br/>
+2. 字符验证码： <a href="http://localhost:8080/captcha/index?type=char">http://localhost:8080/captcha/index?type=char</a> <br/>
+3. 运算验证码: <a href="http://localhost:8080/captcha/index?type=operation">http://localhost:8080/captcha/index?type=operation</a> <br/>
+4. 滑动验证码: <a href="http://localhost:8080/captcha/index?type=slide">http://localhost:8080/captcha/index?type=slide</a> <br/>
 
 #### 使用说明
 
-1. xxxx
-2. xxxx
-3. xxxx
+字符验证码、滑动验证码、滑动验证码有工具类使用；同时，字符验证码、滑动验证码集成了google的kaptcha验证码 <br/>
 
-#### 参与贡献
+- 字符验证码:  <br/>
+默认使用kaptcha验证码。开箱即用，不需要任何配置就可以访问 <br/>
+- 运算验证码: <br/>
+默认使用kaptcha验证码。开箱即用，已经将运算器类配置好。如果需要更改和自定义运算方法请移步：<br/>
+config.selfimpr.captcha  ->  config  ->  CaptchaConfig  ->  getKaptchaBeanMath()
+- 滑动验证码: <br/>
+需要将自己的验证码图片配置到application.yml文件路径中。相关的验证码图片和模板在以下位置：
+项目中resources  ->  static ->  targets和templates目录
 
-1. Fork 本仓库
-2. 新建 Feat_xxx 分支
-3. 提交代码
-4. 新建 Pull Request
+##许可证
+[![license](https://img.shields.io/badge/License-MIT-orange?style=flat-square)](https://img.shields.io/badge/License-MIT-orange)
+
+##预览图
+<a href="https://gitee.com/gester/captcha/blob/develop/src/main/resources/static/img/1.jpg">预览图1</a>
+<a href="https://gitee.com/gester/captcha/blob/develop/src/main/resources/static/img/2.jpg">预览图2</a>
+<a href="https://gitee.com/gester/captcha/blob/develop/src/main/resources/static/img/3.jpg">预览图3</a>
+<a href="https://gitee.com/gester/captcha/blob/develop/src/main/resources/static/img/4.jpg">预览图4</a>
+<a href="https://gitee.com/gester/captcha/blob/develop/src/main/resources/static/img/5.jpg">预览图5</a>
 
 
-#### 码云特技
 
-1. 使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2. 码云官方博客 [blog.gitee.com](https://blog.gitee.com)
-3. 你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解码云上的优秀开源项目
-4. [GVP](https://gitee.com/gvp) 全称是码云最有价值开源项目，是码云综合评定出的优秀开源项目
-5. 码云官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6. 码云封面人物是一档用来展示码云会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)

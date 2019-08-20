@@ -66,7 +66,7 @@ public class CaptchaConfig
         properties.setProperty("kaptcha.textproducer.font.size", "35");
         // KAPTCHA_SESSION_KEY
         properties.setProperty("kaptcha.session.key", "kaptchaMathCode");
-        // 验证码文本生成器
+// --------------验证码文本生成器,这里需要设置成自己项目的包名----------------------
         properties.setProperty("kaptcha.textproducer.impl", "com.selfimpr.captcha.config.KaptchaMathTextCreator");
         // 验证码文本字符间距 默认为2
         properties.setProperty("kaptcha.textproducer.char.space", "3");
