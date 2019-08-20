@@ -38,11 +38,11 @@ config.selfimpr.captcha  ->  config  ->  CaptchaConfig  ->  getKaptchaBeanMath()
 [![license](https://img.shields.io/badge/License-MIT-orange?style=flat-square)](https://img.shields.io/badge/License-MIT-orange) <br/>
 
 #### 预览图
-<a href="https://gitee.com/gester/captcha/tree/develop/src/main/resources/static/img//1.jpg">预览图1</a>
-<a href="https://gitee.com/gester/captcha/tree/develop/src/main/resources/static/img/2.jpg">预览图2</a>
-<a href="https://gitee.com/gester/captcha/tree/develop/src/main/resources/static/img/3.jpg">预览图3</a>
-<a href="https://gitee.com/gester/captcha/tree/develop/src/main/resources/static/img/4.jpg">预览图4</a>
-<a href="https://gitee.com/gester/captcha/tree/develop/src/main/resources/static/img/5.jpg">预览图5</a>
+<a href="https://gitee.com/gester/captcha/blob/develop/src/main/resources/static/img/1.png">预览图1</a>
+<a href="https://gitee.com/gester/captcha/blob/develop/src/main/resources/static/img/2.png">预览图2</a>
+<a href="https://gitee.com/gester/captcha/blob/develop/src/main/resources/static/img/3.png">预览图3</a>
+<a href="https://gitee.com/gester/captcha/blob/develop/src/main/resources/static/img/4.png">预览图4</a>
+<a href="https://gitee.com/gester/captcha/blob/develop/src/main/resources/static/img/5.png">预览图5</a>
 
 
 
