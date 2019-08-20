@@ -11,7 +11,7 @@
         .v_rightBtn { position: absolute; left: 0; top: 0; height: 33px; width: 40px; background: #ddd; cursor: pointer; }
         .imgBtn{ width:44px; height: 171px; position: absolute; left: 0;  }
         .imgBtn img{ z-index:99; align:center;}
-        .imgBg{ position:absolute;bottom:35px;width: 280px; height: 171px; box-shadow: 0px 4px 8px #3C5476; display:none;z-index:9;}
+        .imgBg{ position:absolute;bottom:35px;width: 280px; height: 171px;  display:none;z-index:9;}
         .imgBg_2{ position:absolute; bottom: -80px;  bottom:35px; width: 150px; height: 60px;   display:block;z-index:9;}
         .imgBg_3{ position:absolute;  bottom: -80px; bottom:35px; width: 170px; height: 60px;   display:block;z-index:9;}
         .hkinnerWrap{ border: 1px solid #eee; z-index:9999}
