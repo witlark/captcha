@@ -11,12 +11,14 @@ import java.util.Random;
  * @Author: YangXingfu
  * @Date: 2019/07/12 09:11
  */
-
 public class KaptchaMathTextCreator extends DefaultTextCreator {
 
-    StringBuilder result = new StringBuilder();
+    StringBuilder result = new StringBuilder();  //  运算表达式及结果值
 
-
+    /**
+     * 获取运算验证码
+     * @return 返回运算验证码
+     */
     @Override
     public String getText() {
         Random random = new Random(System.currentTimeMillis());
@@ -32,7 +34,12 @@ public class KaptchaMathTextCreator extends DefaultTextCreator {
         }
         return result.toString();
     }
-    
+
+    /**
+     * 加法运算
+     * @param x 变量x
+     * @param y 变量y
+     */
     private void add(int x, int y) {
         result.append(x);
         result.append(" + ");
@@ -41,6 +48,11 @@ public class KaptchaMathTextCreator extends DefaultTextCreator {
         result.append(x + y);
     }
 
+    /**
+     * 减法运算
+     * @param x 变量x
+     * @param y 变量y
+     */
     private void subtract(int x, int y) {
         int max = Math.max(x, y);
         int min = Math.min(x, y);
@@ -51,6 +63,11 @@ public class KaptchaMathTextCreator extends DefaultTextCreator {
         result.append(max - min);
     }
 
+    /**
+     * 乘法运算
+     * @param x 变量x
+     * @param y 变量y
+     */
     private void multiply(int x, int y) {
         int value = x * y;
         result.append(x);
@@ -60,6 +77,11 @@ public class KaptchaMathTextCreator extends DefaultTextCreator {
         result.append(value > 100 ? x + y : x * y);
     }
 
+    /**
+     * 除法运算
+     * @param x 变量x
+     * @param y 变量y
+     */
     private void divide(int x, int y) {
         int max = Math.max(x, y);
         int min = Math.min(x, y);

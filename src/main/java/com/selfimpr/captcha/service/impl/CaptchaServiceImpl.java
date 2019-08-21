@@ -202,6 +202,12 @@ public class CaptchaServiceImpl implements CaptchaService {
 
     }
 
+    /**
+     * 获取滑动验证码
+     * @param imageVerificationDto 验证码参数
+     * @return 滑动验证码
+     * @throws ServiceException 获取滑动验证码异常
+     */
     public ImageVerificationVo selectSlideVerificationCode(ImageVerificationDto imageVerificationDto) throws ServiceException {
 
 
@@ -280,6 +286,13 @@ public class CaptchaServiceImpl implements CaptchaService {
         return imageVerificationVo;
     }
 
+    /**
+     * 滑动验证码验证方法
+     * @param X x轴坐标
+     * @param Y y轴坐标
+     * @return 滑动验证码验证状态
+     * @throws ServiceException 验证滑动验证码异常
+     */
     @Override
     public boolean checkVerificationResult(String X, String Y) throws ServiceException {
         try {

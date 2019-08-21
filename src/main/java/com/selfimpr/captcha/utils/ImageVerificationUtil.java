@@ -41,10 +41,12 @@ public class ImageVerificationUtil {
     //  默认图片高度
     private static final int DEFAULT_IMAGE_HEIGHT = 171;
 
+    //  获取request对象
     protected static HttpServletRequest getRequest() {
         return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
     }
 
+    //  获取response对象
     protected static HttpServletResponse getResponse() {
         return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
     }
@@ -61,13 +63,15 @@ public class ImageVerificationUtil {
         int X, Y;
         ImageVerificationVo imageVerificationVo = null;
 
-        int VERIFICATION_IMAGE_WIDTH = verificationImage.getWidth();
-        int VERIFICATION_IMAGE_HEIGHT = verificationImage.getHeight();
-        int TEMPLATE_IMAGE_WIDTH = templateImage.getWidth();
-        int TEMPLATE_IMAGE_HEIGHT = templateImage.getHeight();
+
+//        int VERIFICATION_IMAGE_WIDTH = verificationImage.getWidth();  //  原图宽度
+//        int VERIFICATION_IMAGE_HEIGHT = verificationImage.getHeight();  //  原图高度
+        int TEMPLATE_IMAGE_WIDTH = templateImage.getWidth();   //  抠图模板宽度
+        int TEMPLATE_IMAGE_HEIGHT = templateImage.getHeight();  //  抠图模板高度
 
         Random random = new Random(System.currentTimeMillis());
 
+        //  取范围内坐标数据，坐标抠图一定要落在原图中，否则会导致程序错误
         X = random.nextInt(DEFAULT_IMAGE_WIDTH - TEMPLATE_IMAGE_WIDTH) % (DEFAULT_IMAGE_WIDTH - TEMPLATE_IMAGE_WIDTH - TEMPLATE_IMAGE_WIDTH + 1) + TEMPLATE_IMAGE_WIDTH;
         Y = random.nextInt(DEFAULT_IMAGE_HEIGHT - TEMPLATE_IMAGE_WIDTH) % (DEFAULT_IMAGE_HEIGHT - TEMPLATE_IMAGE_WIDTH - TEMPLATE_IMAGE_WIDTH + 1) + TEMPLATE_IMAGE_WIDTH;
         if (TEMPLATE_IMAGE_HEIGHT - DEFAULT_IMAGE_HEIGHT >= 0) {
@@ -127,25 +131,32 @@ public class ImageVerificationUtil {
             //  原图生成遮罩
             BufferedImage shadeImage = generateShadeByTemplateImage(originImage, templateImage, X, Y);
 
+
             imageVerificationVo = new ImageVerificationVo();
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            //  图片转为二进制字符串
             ImageIO.write(originImage, originImageFileType, byteArrayOutputStream);
             byte[] originImageBytes = byteArrayOutputStream.toByteArray();
             byteArrayOutputStream.flush();
             byteArrayOutputStream.reset();
+            //  图片加密成base64字符串
             String originImageString = Base64Utils.encodeToString(originImageBytes);
             imageVerificationVo.setOriginImage(originImageString);
 
             ImageIO.write(shadeImage, templateImageFileType, byteArrayOutputStream);
+            //  图片转为二进制字符串
             byte[] shadeImageBytes = byteArrayOutputStream.toByteArray();
             byteArrayOutputStream.flush();
             byteArrayOutputStream.reset();
+            //  图片加密成base64字符串
             String shadeImageString = Base64Utils.encodeToString(shadeImageBytes);
             imageVerificationVo.setShadeImage(shadeImageString);
 
             ImageIO.write(cutoutImage, templateImageFileType, byteArrayOutputStream);
+            //  图片转为二进制字符串
             byte[] cutoutImageBytes = byteArrayOutputStream.toByteArray();
             byteArrayOutputStream.reset();
+            //  图片加密成base64字符串
             String cutoutImageString = Base64Utils.encodeToString(cutoutImageBytes);
             imageVerificationVo.setCutoutImage(cutoutImageString);
 
@@ -304,9 +315,12 @@ public class ImageVerificationUtil {
     public static ImageVerificationVo cutoutImageEdge(ImageVerificationVo imageVerificationVo, BufferedImage borderImage, String borderImageFileType) throws ServiceException{
         try {
             String cutoutImageString = imageVerificationVo.getCutoutImage();
+            //  图片解密成二进制字符创
             byte[] bytes = Base64Utils.decodeFromString(cutoutImageString);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+            //  读取图片
             BufferedImage cutoutImage = ImageIO.read(byteArrayInputStream);
+            //  获取模板边框矩阵， 并进行颜色处理
             int[][] borderImageMatrix = getMatrix(borderImage);
             for (int i = 0; i < borderImageMatrix.length; i++) {
                 for (int j = 0; j < borderImageMatrix[0].length; j++) {
@@ -318,7 +332,9 @@ public class ImageVerificationUtil {
             }
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(cutoutImage, borderImageFileType, byteArrayOutputStream);
+            //  新模板图描边处理后转成二进制字符串
             byte[] cutoutImageBytes = byteArrayOutputStream.toByteArray();
+            //  二进制字符串加密成base64字符串
             String cutoutImageStr = Base64Utils.encodeToString(cutoutImageBytes);
             imageVerificationVo.setCutoutImage(cutoutImageStr);
         } catch (IOException e) {

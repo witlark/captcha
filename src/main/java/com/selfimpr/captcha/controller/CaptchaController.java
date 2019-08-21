@@ -28,6 +28,9 @@ public class CaptchaController {
      */
     private static final Logger log = LoggerFactory.getLogger(CaptchaController.class);
 
+    /**
+     * 运算码业务处理对象
+     */
     @Autowired
     private CaptchaService captchaService;
 
@@ -40,7 +43,11 @@ public class CaptchaController {
         return "indexs";
     }
 
-
+    /**
+     * 获取验证码
+     * @param imageVerificationDto 验证码参数
+     * @return 根据类型参数返回验证码
+     */
     @RequestMapping("/get/verification/image")
     @ResponseBody
     public ImageVerificationVo getVerificationImage(ImageVerificationDto imageVerificationDto) {
@@ -54,6 +61,12 @@ public class CaptchaController {
         return imageVerificationVo;
     }
 
+    /**
+     * 校验验证码
+     * @param X x轴坐标
+     * @param Y y轴坐标
+     * @return 验证结果
+     */
     @ResponseBody
     @RequestMapping("/check/verification/result")
     public boolean checkVerificationResult(String X, String Y) {
