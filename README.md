@@ -42,7 +42,7 @@ config.selfimpr.captcha  ->  config  ->  CaptchaConfig  ->  getKaptchaBeanMath()
 <a href="https://gitee.com/gester/captcha/blob/develop/src/main/resources/static/img/2.png">预览图2</a>
 <a href="https://gitee.com/gester/captcha/blob/develop/src/main/resources/static/img/3.png">预览图3</a>
 <a href="https://gitee.com/gester/captcha/blob/develop/src/main/resources/static/img/4.png">预览图4</a>
-<a href="https://gitee.com/gester/captcha/blob/develop/src/main/resources/static/img/5.png">预览图5</a>
+<a href="https://gitee.com/gester/captcha/blob/develop/src/main/resources/static/img/5.png">预览图5</a> 
 
 
 
