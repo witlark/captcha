@@ -12,6 +12,8 @@ spring:
     expose-spring-macro-helpers: false
 
 #验证码图片地址，需要改成你本地的地址
+#路径调试的时候，配成全路径，不要配成相对路径。相对路径打成jar包的时候，读取不到文件
+#这是前后端分离方式的调用，路径应该由服务器来配置，这里需要手动配置路径。其它方式读取文件，可自行调整CaptchaServiceImpl实现类中selectSlideVerificationCode方法文件读取方式
 captcha:
   slide-verification-code:
     path:

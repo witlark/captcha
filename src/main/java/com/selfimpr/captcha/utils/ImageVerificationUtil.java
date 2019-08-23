@@ -97,6 +97,7 @@ public class ImageVerificationUtil {
      */
     public static ImageVerificationVo pictureTemplateCutout(File originImageFile, String originImageFileType, File templateImageFile, String templateImageFileType, int X, int Y) throws ServiceException {
         ImageVerificationVo imageVerificationVo = null;
+        ByteArrayOutputStream byteArrayOutputStream = null;
 
 
         try {
@@ -133,7 +134,7 @@ public class ImageVerificationUtil {
 
 
             imageVerificationVo = new ImageVerificationVo();
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            byteArrayOutputStream = new ByteArrayOutputStream();
             //  图片转为二进制字符串
             ImageIO.write(originImage, originImageFileType, byteArrayOutputStream);
             byte[] originImageBytes = byteArrayOutputStream.toByteArray();
@@ -164,6 +165,13 @@ public class ImageVerificationUtil {
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new ServiceException(ServiceExceptionCode.IO_EXCEPTON);
+        } finally {
+            try {
+                byteArrayOutputStream.close();
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+                throw new ServiceException(ServiceExceptionCode.IO_EXCEPTON);
+            }
         }
         return imageVerificationVo;
     }
@@ -181,7 +189,6 @@ public class ImageVerificationUtil {
         //  根据原图，创建支持alpha通道的rgb图片
 //        BufferedImage shadeImage = new BufferedImage(originImage.getWidth(), originImage.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
         BufferedImage shadeImage = new BufferedImage(originImage.getWidth(), originImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
-
         //  原图片矩阵
         int[][] originImageMatrix = getMatrix(originImage);
         //  模板图片矩阵
@@ -282,12 +289,13 @@ public class ImageVerificationUtil {
      * @throws ServiceException
      */
     private static BufferedImage getInterestArea(int x, int y, int TEMPLATE_IMAGE_WIDTH, int TEMPLATE_IMAGE_HEIGHT, File originImage, String originImageType) throws ServiceException {
+        ImageInputStream imageInputStream = null;
 
         try {
             Iterator<ImageReader> imageReaderIterator = ImageIO.getImageReadersByFormatName(originImageType);
             ImageReader imageReader = imageReaderIterator.next();
             //  获取图片流
-            ImageInputStream imageInputStream = ImageIO.createImageInputStream(originImage);
+            imageInputStream = ImageIO.createImageInputStream(originImage);
             //  图片输入流顺序读写
             imageReader.setInput(imageInputStream, true);
 
@@ -301,6 +309,13 @@ public class ImageVerificationUtil {
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new ServiceException(ServiceExceptionCode.IO_EXCEPTON);
+        } finally {
+            try {
+                imageInputStream.close();
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+                throw new ServiceException(ServiceExceptionCode.IO_EXCEPTON);
+            }
         }
     }
 
@@ -313,11 +328,15 @@ public class ImageVerificationUtil {
      * @throws ServiceException 图片描边异常
      */
     public static ImageVerificationVo cutoutImageEdge(ImageVerificationVo imageVerificationVo, BufferedImage borderImage, String borderImageFileType) throws ServiceException{
+
+        ByteArrayInputStream byteArrayInputStream = null;
+        ByteArrayOutputStream byteArrayOutputStream = null;
+
         try {
             String cutoutImageString = imageVerificationVo.getCutoutImage();
             //  图片解密成二进制字符创
             byte[] bytes = Base64Utils.decodeFromString(cutoutImageString);
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+            byteArrayInputStream = new ByteArrayInputStream(bytes);
             //  读取图片
             BufferedImage cutoutImage = ImageIO.read(byteArrayInputStream);
             //  获取模板边框矩阵， 并进行颜色处理
@@ -330,7 +349,7 @@ public class ImageVerificationUtil {
                     }
                 }
             }
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            byteArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(cutoutImage, borderImageFileType, byteArrayOutputStream);
             //  新模板图描边处理后转成二进制字符串
             byte[] cutoutImageBytes = byteArrayOutputStream.toByteArray();
@@ -340,6 +359,14 @@ public class ImageVerificationUtil {
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new ServiceException(ServiceExceptionCode.IO_EXCEPTON);
+        } finally {
+            try {
+                byteArrayInputStream.close();
+                byteArrayOutputStream.close();
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+                throw new ServiceException(ServiceExceptionCode.IO_EXCEPTON);
+            }
         }
         return imageVerificationVo;
     }
