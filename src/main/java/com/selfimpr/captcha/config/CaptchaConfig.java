@@ -8,6 +8,13 @@ import org.springframework.context.annotation.Configuration;
 import java.awt.*;
 import java.util.Properties;
 
+/**
+ * description:  Captcha验证码配置类
+ * version:  1.0
+ * date: 2019/08/23 17:11
+ * @author: YangXingfu
+ *
+ */
 @Configuration
 public class CaptchaConfig {
 

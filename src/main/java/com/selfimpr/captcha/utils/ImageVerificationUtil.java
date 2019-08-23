@@ -19,9 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -35,22 +33,31 @@ public class ImageVerificationUtil {
 
     private static final Logger log = LoggerFactory.getLogger(ImageVerificationUtil.class);
 
-    //  默认图片宽度
+    /**
+     * 默认图片宽度
+     */
     private static final int DEFAULT_IMAGE_WIDTH = 280;
 
-    //  默认图片高度
+    /**
+     * 默认图片高度
+     */
     private static final int DEFAULT_IMAGE_HEIGHT = 171;
 
-    //  获取request对象
+    /**
+     * 获取request对象
+     * @return 返回request对象
+     */
     protected static HttpServletRequest getRequest() {
         return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
     }
 
-    //  获取response对象
+    /**
+     * 获取response对象
+     * @return 返回response对象
+     */
     protected static HttpServletResponse getResponse() {
         return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
     }
-
 
     /**
      * 生成感兴趣区域坐标
@@ -60,26 +67,29 @@ public class ImageVerificationUtil {
      */
     public static ImageVerificationVo generateCutoutCoordinates(BufferedImage verificationImage, BufferedImage templateImage) {
 
-        int X, Y;
+        int x, y;
         ImageVerificationVo imageVerificationVo = null;
 
-
-//        int VERIFICATION_IMAGE_WIDTH = verificationImage.getWidth();  //  原图宽度
-//        int VERIFICATION_IMAGE_HEIGHT = verificationImage.getHeight();  //  原图高度
-        int TEMPLATE_IMAGE_WIDTH = templateImage.getWidth();   //  抠图模板宽度
-        int TEMPLATE_IMAGE_HEIGHT = templateImage.getHeight();  //  抠图模板高度
+        //  原图宽度
+//        int VERIFICATION_IMAGE_WIDTH = verificationImage.getWidth();
+        //  原图高度
+//        int VERIFICATION_IMAGE_HEIGHT = verificationImage.getHeight();
+        //  抠图模板宽度
+        int templateImageWidth = templateImage.getWidth();
+        //  抠图模板高度
+        int templateImageHeight = templateImage.getHeight();
 
         Random random = new Random(System.currentTimeMillis());
 
         //  取范围内坐标数据，坐标抠图一定要落在原图中，否则会导致程序错误
-        X = random.nextInt(DEFAULT_IMAGE_WIDTH - TEMPLATE_IMAGE_WIDTH) % (DEFAULT_IMAGE_WIDTH - TEMPLATE_IMAGE_WIDTH - TEMPLATE_IMAGE_WIDTH + 1) + TEMPLATE_IMAGE_WIDTH;
-        Y = random.nextInt(DEFAULT_IMAGE_HEIGHT - TEMPLATE_IMAGE_WIDTH) % (DEFAULT_IMAGE_HEIGHT - TEMPLATE_IMAGE_WIDTH - TEMPLATE_IMAGE_WIDTH + 1) + TEMPLATE_IMAGE_WIDTH;
-        if (TEMPLATE_IMAGE_HEIGHT - DEFAULT_IMAGE_HEIGHT >= 0) {
-            Y = random.nextInt(10);
+        x = random.nextInt(DEFAULT_IMAGE_WIDTH - templateImageWidth) % (DEFAULT_IMAGE_WIDTH - templateImageWidth - templateImageWidth + 1) + templateImageWidth;
+        y = random.nextInt(DEFAULT_IMAGE_HEIGHT - templateImageWidth) % (DEFAULT_IMAGE_HEIGHT - templateImageWidth - templateImageWidth + 1) + templateImageWidth;
+        if (templateImageHeight - DEFAULT_IMAGE_HEIGHT >= 0) {
+            y = random.nextInt(10);
         }
         imageVerificationVo = new ImageVerificationVo();
-        imageVerificationVo.setX(X);
-        imageVerificationVo.setY(Y);
+        imageVerificationVo.setX(x);
+        imageVerificationVo.setY(y);
 
         return imageVerificationVo;
     }
@@ -90,12 +100,12 @@ public class ImageVerificationUtil {
      * @param originImageFileType 源图文件扩展名
      * @param templateImageFile 模板图文件
      * @param templateImageFileType 模板图文件扩展名
-     * @param X 感兴趣区域X轴
-     * @param Y 感兴趣区域Y轴
+     * @param x 感兴趣区域X轴
+     * @param y 感兴趣区域Y轴
      * @return
      * @throws ServiceException
      */
-    public static ImageVerificationVo pictureTemplateCutout(File originImageFile, String originImageFileType, File templateImageFile, String templateImageFileType, int X, int Y) throws ServiceException {
+    public static ImageVerificationVo pictureTemplateCutout(File originImageFile, String originImageFileType, File templateImageFile, String templateImageFileType, int x, int y) throws ServiceException {
         ImageVerificationVo imageVerificationVo = null;
         ByteArrayOutputStream byteArrayOutputStream = null;
 
@@ -106,31 +116,31 @@ public class ImageVerificationUtil {
 
             //  读取原图
             BufferedImage originImage = ImageIO.read(originImageFile);
-            int TEMPLATE_IMAGE_WIDTH = templateImage.getWidth();
-            int TEMPLATE_IMAGE_HEIGHT = templateImage.getHeight();
+            int templateImageWidth = templateImage.getWidth();
+            int templateImageHeight = templateImage.getHeight();
 
             //  切块图   根据模板图尺寸创建一张透明图片
-            BufferedImage cutoutImage = new BufferedImage(TEMPLATE_IMAGE_WIDTH, TEMPLATE_IMAGE_HEIGHT, templateImage.getType());
+            BufferedImage cutoutImage = new BufferedImage(templateImageWidth, templateImageHeight, templateImage.getType());
 
             //  根据坐标获取感兴趣区域
-            BufferedImage interestArea = getInterestArea(X, Y, TEMPLATE_IMAGE_WIDTH, TEMPLATE_IMAGE_HEIGHT, originImageFile, originImageFileType);
+            BufferedImage interestArea = getInterestArea(x, y, templateImageWidth, templateImageHeight, originImageFile, originImageFileType);
 
             //  根据模板图片切图
             cutoutImage = cutoutImageByTemplateImage(interestArea, templateImage, cutoutImage);
 
             //  图片绘图
             int bold = 5;
-            Graphics2D graphics2D = cutoutImage.createGraphics();
-            graphics2D.setBackground(Color.white);
+            Graphics2D graphics = cutoutImage.createGraphics();
+            graphics.setBackground(Color.white);
 
             //  设置抗锯齿属性
-            graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            graphics2D.setStroke(new BasicStroke(bold, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
-            graphics2D.drawImage(cutoutImage, 0, 0, null);
-            graphics2D.dispose();
+            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            graphics.setStroke(new BasicStroke(bold, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
+            graphics.drawImage(cutoutImage, 0, 0, null);
+            graphics.dispose();
 
             //  原图生成遮罩
-            BufferedImage shadeImage = generateShadeByTemplateImage(originImage, templateImage, X, Y);
+            BufferedImage shadeImage = generateShadeByTemplateImage(originImage, templateImage, x, y);
 
 
             imageVerificationVo = new ImageVerificationVo();
@@ -164,13 +174,13 @@ public class ImageVerificationUtil {
 
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            throw new ServiceException(ServiceExceptionCode.IO_EXCEPTON);
+            throw new ServiceException(ServiceExceptionCode.IO_EXCEPTION);
         } finally {
             try {
                 byteArrayOutputStream.close();
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
-                throw new ServiceException(ServiceExceptionCode.IO_EXCEPTON);
+                throw new ServiceException(ServiceExceptionCode.IO_EXCEPTION);
             }
         }
         return imageVerificationVo;
@@ -187,7 +197,6 @@ public class ImageVerificationUtil {
      */
     private static BufferedImage generateShadeByTemplateImage(BufferedImage originImage, BufferedImage templateImage, int x, int y) throws IOException {
         //  根据原图，创建支持alpha通道的rgb图片
-//        BufferedImage shadeImage = new BufferedImage(originImage.getWidth(), originImage.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
         BufferedImage shadeImage = new BufferedImage(originImage.getWidth(), originImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
         //  原图片矩阵
         int[][] originImageMatrix = getMatrix(originImage);
@@ -215,18 +224,18 @@ public class ImageVerificationUtil {
 
                 //对源文件备份图像(x+i,y+j)坐标点进行透明处理
                 if (rgb != 16777215 && rgb < 0) {
-                    int rgb_ori = shadeImage.getRGB(x + i, y + j);
-                    int r = (0xff & rgb_ori);
-                    int g = (0xff & (rgb_ori >> 8));
-                    int b = (0xff & (rgb_ori >> 16));
+                    int originRGB = shadeImage.getRGB(x + i, y + j);
+                    int r = (0xff & originRGB);
+                    int g = (0xff & (originRGB >> 8));
+                    int b = (0xff & (originRGB >> 16));
 
 
-                    rgb_ori = r + (g << 8) + (b << 16) + (140 << 24);
+                    originRGB = r + (g << 8) + (b << 16) + (140 << 24);
 
                     //  对遮罩透明处理
-                    shadeImage.setRGB(x + i, y + j, rgb_ori);
+                    shadeImage.setRGB(x + i, y + j, originRGB);
                     //  设置遮罩颜色
-//                    shadeImage.setRGB(x + i, y + j, rgb_ori);
+//                    shadeImage.setRGB(x + i, y + j, originRGB);
 
                 }
 
@@ -281,14 +290,14 @@ public class ImageVerificationUtil {
      * 获取感兴趣区域
      * @param x 感兴趣区域X轴
      * @param y 感兴趣区域Y轴
-     * @param TEMPLATE_IMAGE_WIDTH  模板图宽度
-     * @param TEMPLATE_IMAGE_HEIGHT 模板图高度
+     * @param templateImageWidth  模板图宽度
+     * @param templateImageHeight 模板图高度
      * @param originImage 源图
      * @param originImageType 源图扩展名
      * @return
      * @throws ServiceException
      */
-    private static BufferedImage getInterestArea(int x, int y, int TEMPLATE_IMAGE_WIDTH, int TEMPLATE_IMAGE_HEIGHT, File originImage, String originImageType) throws ServiceException {
+    private static BufferedImage getInterestArea(int x, int y, int templateImageWidth, int templateImageHeight, File originImage, String originImageType) throws ServiceException {
         ImageInputStream imageInputStream = null;
 
         try {
@@ -302,19 +311,19 @@ public class ImageVerificationUtil {
             ImageReadParam imageReadParam = imageReader.getDefaultReadParam();
 
             //  根据坐标生成矩形
-            Rectangle rectangle = new Rectangle(x, y, TEMPLATE_IMAGE_WIDTH, TEMPLATE_IMAGE_HEIGHT);
+            Rectangle rectangle = new Rectangle(x, y, templateImageWidth, templateImageHeight);
             imageReadParam.setSourceRegion(rectangle);
             BufferedImage interestImage = imageReader.read(0, imageReadParam);
             return interestImage;
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            throw new ServiceException(ServiceExceptionCode.IO_EXCEPTON);
+            throw new ServiceException(ServiceExceptionCode.IO_EXCEPTION);
         } finally {
             try {
                 imageInputStream.close();
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
-                throw new ServiceException(ServiceExceptionCode.IO_EXCEPTON);
+                throw new ServiceException(ServiceExceptionCode.IO_EXCEPTION);
             }
         }
     }
@@ -358,14 +367,14 @@ public class ImageVerificationUtil {
             imageVerificationVo.setCutoutImage(cutoutImageStr);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            throw new ServiceException(ServiceExceptionCode.IO_EXCEPTON);
+            throw new ServiceException(ServiceExceptionCode.IO_EXCEPTION);
         } finally {
             try {
                 byteArrayInputStream.close();
                 byteArrayOutputStream.close();
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
-                throw new ServiceException(ServiceExceptionCode.IO_EXCEPTON);
+                throw new ServiceException(ServiceExceptionCode.IO_EXCEPTION);
             }
         }
         return imageVerificationVo;

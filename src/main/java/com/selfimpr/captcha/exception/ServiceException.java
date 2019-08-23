@@ -12,8 +12,14 @@ import com.selfimpr.captcha.exception.code.ServiceExceptionCode;
 
 public class ServiceException extends Exception {
 
+    /**
+     * 异常代码
+     */
     private String code;
 
+    /**
+     * 异常信息
+     */
     private String msg;
 
     public String getMsg() {

@@ -45,27 +45,27 @@ public class ImageVerificationDto implements Serializable {
     /**
      * 滑动验证码，X轴
      */
-    private int X;
+    private int x;
 
     /**
      * 滑动验证码，Y轴
      */
-    private int Y;
+    private int y;
 
     public int getX() {
-        return X;
+        return x;
     }
 
     public void setX(int x) {
-        X = x;
+        this.x = x;
     }
 
     public int getY() {
-        return Y;
+        return y;
     }
 
     public void setY(int y) {
-        Y = y;
+        this.y = y;
     }
 
     public String getType() {

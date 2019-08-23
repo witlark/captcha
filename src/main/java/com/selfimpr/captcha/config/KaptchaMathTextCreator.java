@@ -13,7 +13,8 @@ import java.util.Random;
  */
 public class KaptchaMathTextCreator extends DefaultTextCreator {
 
-    StringBuilder result = new StringBuilder();  //  运算表达式及结果值
+    //  运算表达式及结果值
+    StringBuilder result = new StringBuilder();
 
     /**
      * 获取运算验证码
@@ -31,6 +32,7 @@ public class KaptchaMathTextCreator extends DefaultTextCreator {
             case 1 : subtract(x, y); break;
             case 2 : multiply(x, y); break;
             case 3 : divide(x, y); break;
+            default : multiply(x, y); break;
         }
         return result.toString();
     }

@@ -27,11 +27,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
 import java.util.Random;
 
 /**
- * @Description: -------------------
+ * @Description: 验证码业务实现类
+ * -------------------
  * @Author: YangXingfu
  * @Date: 2019/07/24 17:16
  */
@@ -44,31 +44,42 @@ public class CaptchaServiceImpl implements CaptchaService {
      */
     private static final Logger log = LoggerFactory.getLogger(CaptchaController.class);
 
-    /*  字符验证码  */
+    /**
+     * 字符验证码
+     */
     @Autowired
     private Producer captchaProducer;
 
-    /*  数值运算验证码  */
+    /**
+     * 数值运算验证码
+     */
     @Autowired
     private Producer captchaProducerMath;
 
-    /*  源图路径前缀  */
+    /**
+     * 源图路径前缀
+     */
     @Value("${captcha.slide-verification-code.path.origin-image}")
     private String verificationImagePathPrefix;
 
-    /*  模板图路径前缀  */
+    /**
+     * 模板图路径前缀
+     */
     @Value("${captcha.slide-verification-code.path.template-image}")
     private String templateImagePathPrefix;
 
-
-
-
-    /*  获取request对象  */
+    /**
+     * 获取request对象
+     * @return 返回request对象
+     */
     protected static HttpServletRequest getRequest() {
         return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
     }
 
-    /*  获取response对象  */
+    /**
+     * 获取response对象
+     * @return 返回response对象
+     */
     protected static HttpServletResponse getResponse() {
         return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
     }
@@ -250,8 +261,8 @@ public class CaptchaServiceImpl implements CaptchaService {
             //  获取原图感兴趣区域坐标
             imageVerificationVo = ImageVerificationUtil.generateCutoutCoordinates(verificationImage, readTemplateImage);
 
-            int Y  = imageVerificationVo.getY();
-                    //  在分布式应用中，可将session改为redis存储
+            int y  = imageVerificationVo.getY();
+            //  在分布式应用中，可将session改为redis存储
             getRequest().getSession().setAttribute("imageVerificationVo", imageVerificationVo);
 
             //  根据原图生成遮罩图和切块图
@@ -259,7 +270,7 @@ public class CaptchaServiceImpl implements CaptchaService {
 
             //   剪切图描边
             imageVerificationVo = ImageVerificationUtil.cutoutImageEdge(imageVerificationVo, borderImage, borderImageFileType);
-            imageVerificationVo.setY(Y);
+            imageVerificationVo.setY(y);
             imageVerificationVo.setType(imageVerificationDto.getType());
 
 
@@ -280,7 +291,7 @@ public class CaptchaServiceImpl implements CaptchaService {
             throw new ServiceException(ServiceExceptionCode.URL_DECODER_ERROR);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            throw new ServiceException(ServiceExceptionCode.IO_EXCEPTON);
+            throw new ServiceException(ServiceExceptionCode.IO_EXCEPTION);
         }
 
         return imageVerificationVo;
@@ -288,18 +299,21 @@ public class CaptchaServiceImpl implements CaptchaService {
 
     /**
      * 滑动验证码验证方法
-     * @param X x轴坐标
-     * @param Y y轴坐标
+     * @param x x轴坐标
+     * @param y y轴坐标
      * @return 滑动验证码验证状态
      * @throws ServiceException 验证滑动验证码异常
      */
     @Override
-    public boolean checkVerificationResult(String X, String Y) throws ServiceException {
+    public boolean checkVerificationResult(String x, String y) throws ServiceException {
+
+        int threshold = 5;
+
         try {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
             ImageVerificationVo imageVerificationVo = (ImageVerificationVo) request.getSession().getAttribute("imageVerificationVo");
             if (imageVerificationVo != null) {
-                if ((Math.abs(Integer.parseInt(X) - imageVerificationVo.getX()) <= 5) && Y.equals(String.valueOf(imageVerificationVo.getY()))) {
+                if ((Math.abs(Integer.parseInt(x) - imageVerificationVo.getX()) <= threshold) && y.equals(String.valueOf(imageVerificationVo.getY()))) {
                     System.out.println("验证成功");
                     return true;
                 } else {
@@ -311,7 +325,7 @@ public class CaptchaServiceImpl implements CaptchaService {
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw new ServiceException(ServiceExceptionCode.IO_EXCEPTON);
+            throw new ServiceException(ServiceExceptionCode.IO_EXCEPTION);
         }
     }
 }

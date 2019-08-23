@@ -15,10 +15,12 @@ import java.util.Random;
  */
 public class VerificationUtil {
 
-    static StringBuilder result = new StringBuilder();  // 运算验证码结果
+    // 运算验证码结果
+    static StringBuilder result = new StringBuilder();
 
     /**
      * 生成字符验证码
+     *
      * @return 字符验证码
      */
     public static Map<String, Object> generatorCharVerificationCode() {
@@ -108,7 +110,8 @@ public class VerificationUtil {
 
     /**
      * 生成运算验证码
-     * @return  运算验证码
+     *
+     * @return 运算验证码
      */
     public static Map<String, Object> generatorOperationVerificationCode() {
         //  验证码图片边框宽度
@@ -189,6 +192,7 @@ public class VerificationUtil {
 
     /**
      * 获取运算验证码
+     *
      * @return 运算验证码
      */
     public static String getText() {
@@ -210,12 +214,16 @@ public class VerificationUtil {
             case 3:
                 divide(x, y);
                 break;
+            default:
+                multiply(x, y);
+                break;
         }
         return result.toString();
     }
 
     /**
      * 加法运算
+     *
      * @param x 变量x
      * @param y 变量y
      */
@@ -229,6 +237,7 @@ public class VerificationUtil {
 
     /**
      * 减法运算
+     *
      * @param x 变量x
      * @param y 变量y
      */
@@ -244,6 +253,7 @@ public class VerificationUtil {
 
     /**
      * 乘法运算
+     *
      * @param x 变量x
      * @param y 变量y
      */
@@ -258,6 +268,7 @@ public class VerificationUtil {
 
     /**
      * 出发运算
+     *
      * @param x 变量x
      * @param y 变量y
      */

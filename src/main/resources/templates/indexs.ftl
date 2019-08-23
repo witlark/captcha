@@ -129,15 +129,15 @@
     function submitDate(x,y,tokenId) {
 
         $.ajax({
-            url:"/captcha/check/verification/result?X="+x+"&Y="+y,
+            url:"/captcha/check/verification/result?x="+ x +"&y="+y,
             dataType:'json',
             type: "POST",
             success:function (data) {
                 if(data==true){
                     $(".hkinnerWrap").addClass("green").removeClass("red");
                     $(".hkinnerWrap input[name='validX']").val(x);
-                    $("#X").val(x);
-                    $("#Y").val(y);
+                    $("#x").val(x);
+                    $("#y").val(y);
                     layer.msg("验证成功", {time:1000,icon:1})
                 } else {
                     $(".hkinnerWrap").addClass("red").removeClass("green");

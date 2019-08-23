@@ -63,16 +63,16 @@ public class CaptchaController {
 
     /**
      * 校验验证码
-     * @param X x轴坐标
-     * @param Y y轴坐标
+     * @param x x轴坐标
+     * @param y y轴坐标
      * @return 验证结果
      */
     @ResponseBody
     @RequestMapping("/check/verification/result")
-    public boolean checkVerificationResult(String X, String Y) {
+    public boolean checkVerificationResult(String x, String y) {
         boolean result = false;
         try {
-            result = captchaService.checkVerificationResult(X, Y);
+            result = captchaService.checkVerificationResult(x, y);
         } catch (ServiceException e) {
             log.error(e.getCode(), e.getMsg());
             return false;
